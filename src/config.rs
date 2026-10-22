@@ -123,10 +123,6 @@ const PORTA_RENDEZVOUS_SERVER: &str = match option_env!("PORTA_RENDEZVOUS_SERVER
     Some(s) => s,
     None => "",
 };
-pub const PORTA_API_SERVER: &str = match option_env!("PORTA_API_SERVER") {
-    Some(s) => s,
-    None => "",
-};
 pub const RENDEZVOUS_SERVERS: &[&str] = &[PORTA_RENDEZVOUS_SERVER];
 pub const RS_PUB_KEY: &str = match option_env!("PORTA_RS_PUB_KEY") {
     Some(s) => s,
