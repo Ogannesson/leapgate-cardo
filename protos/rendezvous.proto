@@ -46,8 +46,8 @@ message PunchHoleRequest {
   // the webrtc:// payload): under force_relay it tells the peer whether the relay is
   // transport-forced (WebSocket — answer may use full ICE) or policy (Relay-only + TURN).
   string webrtc_sdp_offer = 12;
-  // Porta: the requester's own device ID, so porta-server can use the relay measurements
-  // that device reported in its heartbeat. Self-reported, used only to pick a relay.
+  // Porta: the initiator's own device id, so porta-server can use the relay measurements it
+  // reported with its heartbeat. Not authenticated; used for relay selection only.
   string porta_from_id = 1000;
 }
 
