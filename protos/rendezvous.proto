@@ -1,7 +1,7 @@
 syntax = "proto3";
 package hbb;
 
-// Porta: field numbers 1000~1999 are Porta's, clear of the range upstream uses.
+// Porta: field numbers 1000~1999 are Porta's, clear of upstream's.
 
 message IdPk {
   string id = 1;
