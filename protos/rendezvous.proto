@@ -154,6 +154,9 @@ message PunchHoleResponse {
   int32 upnp_port = 10;
   bytes socket_addr_v6 = 11;
   string webrtc_sdp_answer = 12;
+  // Porta (field numbers from 1000 on are Porta's, clear of upstream's): with is_local,
+  // the controlled side's LAN candidates copied from LocalAddr.porta_local_addrs.
+  repeated bytes porta_local_addrs = 1000;
 }
 
 message ConfigUpdate {
@@ -212,6 +215,10 @@ message LocalAddr {
   string id = 4;
   string version = 5;
   bytes socket_addr_v6 = 6;
+  // Porta: the controlled side's LAN addresses (AddrMangle-encoded, best first, all on the
+  // local_addr port). local_addr is the address of the socket to hbbs, which under a TUN
+  // proxy is the virtual adapter's; these come from the physical adapters instead.
+  repeated bytes porta_local_addrs = 1000;
 }
 
 message PeerDiscovery {
