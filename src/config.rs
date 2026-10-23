@@ -69,7 +69,7 @@ lazy_static::lazy_static! {
     static ref ONLINE: Mutex<HashMap<String, i64>> = Default::default();
     pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("".to_owned());
     pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
-    pub static ref APP_NAME: RwLock<String> = RwLock::new("Porta".to_owned());
+    pub static ref APP_NAME: RwLock<String> = RwLock::new("Leapgate".to_owned());
     static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
     static ref USER_DEFAULT_CONFIG: RwLock<(UserDefaultConfig, Instant)> = RwLock::new((UserDefaultConfig::load(), Instant::now()));
     pub static ref NEW_STORED_PEER_CONFIG: Mutex<HashSet<String>> = Default::default();
@@ -80,7 +80,7 @@ lazy_static::lazy_static! {
     pub static ref DEFAULT_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
-    // Porta: hide the "Powered by RustDesk" line that appears once APP_NAME is not RustDesk.
+    // Leapgate: hide the "Powered by RustDesk" line that appears once APP_NAME is not RustDesk.
     pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = RwLock::new(HashMap::from([
         ("hide-powered-by-me".to_owned(), "Y".to_owned()),
     ]));
@@ -117,14 +117,14 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-// Porta: the default servers are injected at build time and are empty when not set, so an
+// Leapgate: the default servers are injected at build time and are empty when not set, so an
 // unconfigured build never falls back to RustDesk's public servers.
-const PORTA_RENDEZVOUS_SERVER: &str = match option_env!("PORTA_RENDEZVOUS_SERVER") {
+const LEAPGATE_RENDEZVOUS_SERVER: &str = match option_env!("LEAPGATE_RENDEZVOUS_SERVER") {
     Some(s) => s,
     None => "",
 };
-pub const RENDEZVOUS_SERVERS: &[&str] = &[PORTA_RENDEZVOUS_SERVER];
-pub const RS_PUB_KEY: &str = match option_env!("PORTA_RS_PUB_KEY") {
+pub const RENDEZVOUS_SERVERS: &[&str] = &[LEAPGATE_RENDEZVOUS_SERVER];
+pub const RS_PUB_KEY: &str = match option_env!("LEAPGATE_RS_PUB_KEY") {
     Some(s) => s,
     None => "",
 };
