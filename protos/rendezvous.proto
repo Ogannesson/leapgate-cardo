@@ -292,6 +292,100 @@ message IceCandidate {
   string candidate = 4;
 }
 
+// Leapgate: self-built ICE signaling (phase 3 contract 05). Leapgate's own messages; their field
+// numbers start at 1. A = controller, S = leapgate-server, B = controlled side.
+
+// One side's ICE credentials and candidates.
+message LeapgateIceParams {
+  string ufrag = 1;
+  string pwd = 2;
+  repeated bytes candidates = 3;   // explicit encoding (contract 05 §2.6), best first, at most 16
+}
+
+// A -> S, on an encrypted 21116 TCP connection.
+message LeapgateIceOffer {
+  bytes session = 1;               // 16 random bytes chosen by A
+  string id = 2;                   // B's id
+  string licence_key = 3;
+  LeapgateIceParams params = 4;
+  repeated bytes proofs = 5;       // LEAPGATE-PROOF values for A's candidates; checked, not forwarded
+}
+
+// The plaintext sealed inside LeapgateIceForward.sealed.
+message LeapgateIceSealed {
+  bytes session = 1;
+  LeapgateIceParams params = 2;    // A's, as filtered by S
+}
+
+// S -> B over UDP: encrypted to B's device key, then signed with the rendezvous key.
+message LeapgateIceForward {
+  uint64 ts = 1;                   // S's unix seconds at signing
+  bytes sealed = 2;                // sealed box of a serialized LeapgateIceSealed
+  bytes sig = 3;                   // Ed25519 detached signature, 64 bytes
+}
+
+// B -> S (pk empty), then S -> A (proofs empty).
+message LeapgateIceAnswer {
+  bytes session = 1;
+  LeapgateIceParams params = 2;
+  repeated bytes proofs = 3;       // B -> S only
+  bytes pk = 4;                    // S -> A only: B's IdPk signed by S, as PunchHoleResponse.pk
+}
+
+// S -> A, or B -> S and then S -> A.
+message LeapgateIceReject {
+  enum Reason {
+    BAD = 0;
+    OFFLINE = 1;
+    UNSUPPORTED = 2;
+    RELAY = 3;
+    BUSY = 4;
+  }
+  bytes session = 1;
+  Reason reason = 2;
+}
+
+// A -> S once A's ICE leg has an outcome. Statistics only, not authenticated.
+message LeapgateIceResult {
+  enum Outcome {
+    UNKNOWN = 0;
+    CONNECTED = 1;
+    NO_ANSWER = 2;
+    BAD_ANSWER = 3;
+    NO_PAIR = 4;
+    KCP_FAILED = 5;
+    SECURE_FAILED = 6;
+  }
+  enum Kind {
+    HOST = 0;
+    SRFLX = 1;
+    PRFLX = 2;
+  }
+  enum Net {
+    ETHERNET = 0;
+    WLAN = 1;
+    OTHER = 2;
+  }
+  bytes session = 1;
+  Outcome outcome = 2;
+  uint32 elapsed_ms = 3;           // from the start of A's ICE leg to the outcome
+  Kind local_kind = 4;             // the selected pair; CONNECTED only
+  Kind remote_kind = 5;            // CONNECTED only
+  uint32 family = 6;               // 4 or 6; CONNECTED only
+  Net local_net = 7;               // CONNECTED only
+}
+
+message LeapgateIce {
+  uint32 ver = 1;                  // 1
+  oneof union {
+    LeapgateIceOffer offer = 2;
+    LeapgateIceForward forward = 3;
+    LeapgateIceAnswer answer = 4;
+    LeapgateIceReject reject = 5;
+    LeapgateIceResult result = 6;
+  }
+}
+
 message RendezvousMessage {
   oneof union {
     RegisterPeer register_peer = 6;
@@ -318,5 +412,7 @@ message RendezvousMessage {
     HttpProxyRequest http_proxy_request = 27;
     HttpProxyResponse http_proxy_response = 28;
     IceCandidate ice_candidate = 29;
+    // Leapgate: self-built ICE signaling (phase 3 contract 05).
+    LeapgateIce leapgate_ice = 1000;
   }
 }
