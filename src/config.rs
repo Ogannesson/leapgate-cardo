@@ -1073,6 +1073,8 @@ impl Config {
                     id = (id << 8) | (*x as u32);
                 }
                 id &= 0x1FFFFFFF;
+                // leapgate: salted, so Leapgate and RustDesk on one machine do not take the same id
+                let id = crate::leapgate_id::salt(id);
                 log::info!("Generated id {}", id);
                 Some(id.to_string())
             } else {
